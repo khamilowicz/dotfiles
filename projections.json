@@ -1,6 +1,6 @@
 {
   "web/*.ex": {
-    "alternate": "test/{}_test.exs",
+    "alternate": ["test/{}_test.exs", "spec/{}_spec.exs"],
     "type": "source",
     "template": [
       "defmodule {project|basename|camelcase}.{basename|camelcase} do",
@@ -13,6 +13,15 @@
     "type": "source"
   },
   "test/*_test.exs": {
+    "alternate": ["web/{}.ex", "lib/{}.ex"],
+    "type": "test",
+    "template": [
+      "defmodule {project|basename|camelcase}.{basename|camelcase}Test do",
+      "",
+      "end"
+    ]
+  },
+  "spec/*_spec.exs": {
     "alternate": ["web/{}.ex", "lib/{}.ex"],
     "type": "test",
     "template": [
