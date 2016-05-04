@@ -1,0 +1,28 @@
+{
+  "web/*.ex": {
+    "alternate": "test/{}_test.exs",
+    "type": "source",
+    "template": [
+      "defmodule {project|basename|camelcase}.{basename|camelcase} do",
+      "",
+      "end"
+    ]
+  },
+  "web/*.eex": {
+    "alternate": "web/views/{dirname|basename}_view.ex",
+    "type": "source"
+  },
+  "test/*_test.exs": {
+    "alternate": ["web/{}.ex", "lib/{}.ex"],
+    "type": "test",
+    "template": [
+      "defmodule {project|basename|camelcase}.{basename|camelcase}Test do",
+      "",
+      "end"
+    ]
+  },
+  "*": {
+    "dispatch": "iex -S mix",
+    "start": "mix phoenix.server"
+  }
+}
