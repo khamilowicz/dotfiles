@@ -8,6 +8,15 @@
       "end"
     ]
   },
+  "lib/*.ex": {
+    "alternate": ["test/{}_test.exs", "spec/{}_spec.exs"],
+    "type": "source",
+    "template": [
+      "defmodule {project|basename|camelcase}.{basename|camelcase} do",
+      "",
+      "end"
+    ]
+  },
   "web/*.eex": {
     "alternate": "web/views/{dirname|basename}_view.ex",
     "type": "source"
