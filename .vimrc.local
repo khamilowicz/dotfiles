@@ -1,0 +1,11 @@
+nnoremap ,a :AsyncRun -program=make -post=botright\ cw<cr>
+nnoremap ,t :AsyncRun -program=make -post=botright\ cw<cr>
+nnoremap <space>c :cw<cr>
+nnoremap <space>D :!psql inilab_dev<cr>
+
+" command! AnsiEscOn call g:AnsiEscOnFun()
+
+augroup quickfix
+  autocmd!
+  autocmd  FileType qf call AnsiEscOnFun()
+augroup END
