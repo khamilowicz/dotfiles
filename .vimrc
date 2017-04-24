@@ -107,10 +107,10 @@ autocmd FileType elixir inoremap >> \|><space>
 autocmd FileType elixir compiler exunit
 autocmd FileType elixir set makeprg=mix\ test\ --color
 
-autocmd FileType ruby map <Leader>t :call RunCurrentSpecFile()<CR>
-autocmd FileType ruby map <Leader>s :call RunNearestSpec()<CR>
-autocmd FileType ruby map <Leader>l :call RunLastSpec()<CR>
-autocmd FileType ruby map <Leader>a :call RunAllSpecs()<CR>
+" autocmd FileType ruby map <Leader>t :call RunCurrentSpecFile()<CR>
+" autocmd FileType ruby map <Leader>s :call RunNearestSpec()<CR>
+" autocmd FileType ruby map <Leader>l :call RunLastSpec()<CR>
+" autocmd FileType ruby map <Leader>a :call RunAllSpecs()<CR>
 
 set statusline =%#identifier#
 set statusline+=[%t]%* "tail of the filename
@@ -151,7 +151,6 @@ set statusline+=\ %P\     "percent through file
 set statusline+=%c,     "cursor column
 set statusline+=%l/%L   "cursor line/total lines
 set statusline+=%#warningmsg#
-" set statusline+=%{SyntasticStatuslineFlag()}%*
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
@@ -161,13 +160,7 @@ let g:ruby_indent_access_modifier_style = 'normal'
 let ruby_spellcheck_strings = 1
 let g:rubycomplete_load_gemfile = 1
 
-" let g:syntastic_always_populate_loc_list = 1
-" let g:syntastic_elixir_checkers = ['mix', 'elixir']
-" let g:syntastic_enable_elixir_checker = 1
-
 let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "priv", "web/static" ]
-
-let g:rspec_command = ":execute 'Dispatch rspec {spec}'"
 
 let g:ctrlp_extensions = ['tag']
 let g:ctrlp_use_caching = 0
@@ -175,8 +168,6 @@ let g:ctrlp_custom_ignore = 'node_modules\|bower_components\|DS_Store\|git\|tmp\
 
 let mapleader=","
 let g:ag_prg="ag --column"
-" let g:syntastic_error_symbol = "✗"
-" let g:syntastic_warning_symbol = "⚠"
 
 ab rpy pry
 ab slef self
@@ -209,6 +200,10 @@ nmap <C-c><C-d> <Plug>NormalModeSendToTmux
 nmap <C-d>r <Plug>SetTmuxVars
 nmap <C-c><C-d> vip<C-c><C-d>
 
+nnoremap ,a :AsyncRun -program=make -post=botright\ cw<cr>
+nnoremap ,t :AsyncRun -program=make -post=botright\ cw %<cr>
+nnoremap ,s :AsyncRun -program=make -post=botright\ cw %:<C-r>=line(".") <cr><cr>
+nnoremap <space>c :cw<cr>
 runtime macros/matchit.vim
 
 filetype plugin indent on
@@ -224,16 +219,12 @@ highlight clear SignColumn
 
 set wildignore+=*/tmp\//*,*.so,*.swp,*.zip,tags
 
-let g:syntastic_javascript_checkers = ['eslint']
 let g:jsx_ext_required = 0
-
-let g:syntastic_ruby_checkers = ['mri']
 
 nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
 cnoremap %% <C-R>=expand('%:h').'/'<cr>
 
 highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black 
-
 highlight Folded ctermfg=black cterm=bold term=reverse
 
 let g:ackprg = 'ag --nogroup --column' 
