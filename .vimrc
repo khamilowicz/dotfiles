@@ -50,50 +50,37 @@ Plugin 'tomtom/tlib_vim'
 Plugin 'tpope/vim-surround'
 Plugin 'junegunn/vim-easy-align'
 Plugin 'pbrisbin/vim-mkdir'
-" Plugin 'Raimondi/delimitMate'
 Plugin 'mattn/emmet-vim', { 'for': ['html', 'erb', 'eelixir', 'javascript'] }
 Plugin 'tpope/vim-commentary'
-Plugin 'kovisoft/paredit', { 'for': 'clojure' }
 Plugin 'tpope/vim-eunuch'
-" Plugin 'tpope/vim-rsi'
 Plugin 'tpope/vim-endwise', { 'for': ['ruby', 'elixir'] }
 "Move
 Plugin 'vim-scripts/camelcasemotion'
 Plugin 'ludovicchabant/vim-gutentags'
 "Utilities
 Plugin 'jgdavey/tslime.vim'
-" Plugin 'tpope/vim-dispatch'
 Plugin 'tpope/vim-fugitive'
 Plugin 'idanarye/vim-merginal'
 "Languages
-Plugin 'Guns/vim-clojure-static', { 'for': 'clojure' }
-Plugin 'tpope/vim-fireplace', { 'for': 'clojure' }
 Plugin 'pangloss/vim-javascript', { 'for': 'javascript' }
 Plugin 'mxw/vim-jsx'
-Plugin 'tpope/vim-rails', { 'for': 'ruby' }
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
+Plugin 'tpope/vim-rails', { 'for': 'ruby' }
 Plugin 'thoughtbot/vim-rspec', { 'for': 'ruby' }
 Plugin 'vim-ruby/vim-ruby', { 'for': 'ruby' }
 "Visual
-" Plugin 'scrooloose/syntastic'
 Plugin 'sickill/vim-monokai'
-" Plugin 'vim-scripts/summerfruit256.vim'
-" Plugin 'airblade/vim-rooter'
 Plugin 'powerman/vim-plugin-AnsiEsc'
 Plugin 'skywind3000/asyncrun.vim'
 
 call vundle#end()
 
-
 colorscheme monokai
-" colorscheme default
 "
 autocmd FileType git set foldlevel=0
 
 autocmd BufRead,BufNewFile *.slim set ft=slim
 autocmd BufRead,BufNewFile *.hbs set ft=handlebars
-
-" autocmd BufRead,BufNewFile * Rooter
 
 autocmd FileType gitcommit set tw=72
 
@@ -101,51 +88,40 @@ autocmd BufRead,BufNewFile *.exs set filetype=elixir
 autocmd BufRead,BufNewFile *.ex set filetype=elixir
 autocmd BufRead,BufNewFile *.html.eex set filetype=eelixir
 
-let g:alchemist_tag_disable = 1
-
 autocmd FileType elixir inoremap >> \|><space>
 autocmd FileType elixir compiler exunit
 autocmd FileType elixir set makeprg=mix\ test\ --color
 
-" autocmd FileType ruby map <Leader>t :call RunCurrentSpecFile()<CR>
-" autocmd FileType ruby map <Leader>s :call RunNearestSpec()<CR>
-" autocmd FileType ruby map <Leader>l :call RunLastSpec()<CR>
-" autocmd FileType ruby map <Leader>a :call RunAllSpecs()<CR>
+autocmd FileType gitcommit setlocal spell
+autocmd FileType javascript noremap <space>j :set ft=jsx<cr>
+autocmd FileType jsx noremap <space>j :set ft=javascript<cr>
+
+autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
 
 set statusline =%#identifier#
 set statusline+=[%t]%* "tail of the filename
-
 "display a warning if fileformat isnt unix
 set statusline+=%#warningmsg#
 set statusline+=%{&ff!='unix'?'['.&ff.']':''}%*
-
 "display a warning if file encoding isnt utf-8
 set statusline+=%#warningmsg#
 set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}%* 
-
 set statusline+=%h%y      "filetype help file flag
-
 "read only flag
 set statusline+=%#identifier#
 set statusline+=%r%* 
-
 "modified flag
 set statusline+=%#identifier#
 set statusline+=%m%* 
-
 "display a warning if &et is wrong, or we have mixed-indenting
 set statusline+=%#error#
 set statusline+=%{StatuslineTabWarning()}%*
-
 set statusline+=%{StatuslineTrailingSpaceWarning()}
-
 set statusline+=%#warningmsg#
-
 "display a warning if &paste is set
 set statusline+=%#error#
 set statusline+=%{&paste?'[paste]':''}%*
 set statusline+=%{fugitive#statusline()}
-
 set statusline+=%=      "left/right separator
 set statusline+=\ %P\     "percent through file
 set statusline+=%c,     "cursor column
@@ -154,10 +130,8 @@ set statusline+=%#warningmsg#
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
 
-autocmd FileType gitcommit setlocal spell
-
-let g:ruby_indent_access_modifier_style = 'normal'
 let ruby_spellcheck_strings = 1
+let g:ruby_indent_access_modifier_style = 'normal'
 let g:rubycomplete_load_gemfile = 1
 
 let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "priv", "web/static" ]
@@ -168,10 +142,10 @@ let g:ctrlp_custom_ignore = 'node_modules\|bower_components\|DS_Store\|git\|tmp\
 
 let mapleader=","
 let g:ag_prg="ag --column"
+let g:ackprg = 'ag --nogroup --column' 
 
 ab rpy pry
 ab slef self
-ab Casher Cashier
 
 noremap Q q
 noremap q <NOP>
@@ -200,34 +174,11 @@ nmap <C-c><C-d> <Plug>NormalModeSendToTmux
 nmap <C-d>r <Plug>SetTmuxVars
 nmap <C-c><C-d> vip<C-c><C-d>
 
-nnoremap ,a :AsyncRun -program=make -post=botright\ cw<cr>
-nnoremap ,t :AsyncRun -program=make -post=botright\ cw %<cr>
-nnoremap ,s :AsyncRun -program=make -post=botright\ cw %:<C-r>=line(".") <cr><cr>
-nnoremap <space>c :cw<cr>
-runtime macros/matchit.vim
-
-filetype plugin indent on
-
-""" SPEC
-
-map <space>a :A<CR>
-map <space>A :AV<CR>
-map <space>r :R<CR>
-map <space>R :RV<CR>
-
-highlight clear SignColumn
-
-set wildignore+=*/tmp\//*,*.so,*.swp,*.zip,tags
-
-let g:jsx_ext_required = 0
-
-nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
-cnoremap %% <C-R>=expand('%:h').'/'<cr>
-
-highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black 
-highlight Folded ctermfg=black cterm=bold term=reverse
-
-let g:ackprg = 'ag --nogroup --column' 
+nnoremap ,a :call SaveAsync("")<cr>
+nnoremap ,t :call SaveAsync("%")<cr>
+nnoremap ,s :call SaveAsync("line")<cr>
+nnoremap ,l :call AsyncLastCommand()<cr>
+nnoremap <space>c :botright 30 cw<cr>
 
 noremap <space>f :CtrlSF<space>
 noremap <space>F :CtrlSFOpen<cr>
@@ -252,7 +203,6 @@ nnoremap <space>ge :Gedit<CR>
 nnoremap <space>gL :Glog<CR>
 nnoremap <space>gh :Glog --<CR>
 xnoremap <space>gl :Glog<CR><CR>zz
-" nnoremap <space>gl :tabnew %<cr>:Git! log<CR>
 nnoremap <space>glg :Git log --stat --color<CR>
 nnoremap <space>glgg :Git log --graph --color --oneline<CR>
 nnoremap <space>gc :Merginal<cr>
@@ -261,6 +211,47 @@ nnoremap <space>gr :Gtabedit HEAD^{}<cr>
 nnoremap <space>go :OpenChangedFiles<CR> 
 
 nnoremap <silent> <expr> <space>d ":\<C-u>".(&diff?"diffoff":"diffthis")."\<CR>"
+
+com! JSONFormat %!python -m json.tool
+
+runtime macros/matchit.vim
+
+filetype plugin indent on
+
+""" SPEC
+
+map <space>a :A<CR>
+map <space>A :AV<CR>
+map <space>r :R<CR>
+map <space>R :RV<CR>
+
+highlight clear SignColumn
+
+set wildignore+=*/tmp\//*,*.so,*.swp,*.zip,tags
+
+let g:jsx_ext_required = 0
+
+nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
+" cnoremap %% <C-R>=expand('%:h').'/'<cr>
+
+highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black 
+highlight Folded ctermfg=black cterm=bold term=reverse
+
+function! SaveAsync(test_command)
+  if a:test_command == "line"
+    let l:test_command = expand("%").":".line(".")
+  else
+    let l:test_command = a:test_command
+  endif
+  let s:last_test_command = "AsyncRun -program=make -post=botright\\ cw " . l:test_command
+  exec s:last_test_command
+endfunction
+
+function! AsyncLastCommand()
+  if exists("s:last_test_command")
+    exec s:last_test_command
+  endif
+endfunction
 
 " OpenChangedFiles (<Leader>O)---------------------- {{{
 function! OpenChangedFiles()
@@ -302,7 +293,6 @@ endfunction
 command! RemoveFancyCharacters :call RemoveFancyCharacters()
 
 "recalculate the trailing whitespace warning when idle, and after saving
-autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
 
 "return '[\s]' if trailing white space is detected
 "return '' otherwise
@@ -353,16 +343,6 @@ function! StatuslineTabWarning()
   return b:statusline_tab_warning
 endfunction
 
-com! JSONFormat %!python -m json.tool
-
-if &diff
-  let g:loaded_gutentags = 1
-endif
-
-if filereadable(glob(".vimrc.local"))
-  source .vimrc.local
-endif
-
 function! g:AnsiEscOnFun()
   if &concealcursor == ""
     AnsiEsc
@@ -371,3 +351,11 @@ function! g:AnsiEscOnFun()
     AnsiEsc
   endif
 endfunction
+
+if &diff
+  let g:loaded_gutentags = 1
+endif
+
+if filereadable(glob(".vimrc.local"))
+  source .vimrc.local
+endif
