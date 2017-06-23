@@ -21,6 +21,7 @@ set shiftwidth=2
 set softtabstop=2
 set grepprg=ag
 set ignorecase
+set infercase
 set smartcase
 set undodir=~/.vim/undo
 set virtualedit=block
@@ -30,6 +31,9 @@ set formatoptions+=t
 set incsearch
 set foldmethod=indent
 set foldlevelstart=20 
+set mouse=a
+set breakindent
+set showbreak=\\\\\
 
 set rtp+=~/.vim/bundle/Vundle.vim
 call vundle#begin()
@@ -61,9 +65,10 @@ Plugin 'ludovicchabant/vim-gutentags'
 Plugin 'jgdavey/tslime.vim'
 Plugin 'tpope/vim-fugitive'
 Plugin 'idanarye/vim-merginal'
+Plugin 'salomvary/vim-eslint-compiler'
 "Languages
-Plugin 'pangloss/vim-javascript', { 'for': 'javascript' }
-Plugin 'mxw/vim-jsx'
+Plugin 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx'] }
+Plugin 'mxw/vim-jsx', { 'for': ['javascript', 'jsx']}
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
 Plugin 'tpope/vim-rails', { 'for': 'ruby' }
 Plugin 'thoughtbot/vim-rspec', { 'for': 'ruby' }
@@ -88,15 +93,22 @@ autocmd BufRead,BufNewFile *.exs set filetype=elixir
 autocmd BufRead,BufNewFile *.ex set filetype=elixir
 autocmd BufRead,BufNewFile *.html.eex set filetype=eelixir
 
-autocmd FileType elixir inoremap >> \|><space>
+autocmd BufRead,BufNewFile *.js set filetype=javascript.jsx
+
+autocmd FileType elixir iab <buffer> >> \|>
 autocmd FileType elixir compiler exunit
 autocmd FileType elixir set makeprg=mix\ test\ --color
 
+autocmd FileType eelixir iab <buffer> << <%=
+autocmd FileType eelixir iab <buffer> >> %>
+
+autocmd FileType javascript compiler eslint
+
 autocmd FileType gitcommit setlocal spell
-autocmd FileType javascript noremap <space>j :set ft=jsx<cr>
-autocmd FileType jsx noremap <space>j :set ft=javascript<cr>
 
 autocmd cursorhold,bufwritepost * unlet! b:statusline_trailing_space_warning
+
+autocmd VimResized * wincmd =
 
 set statusline =%#identifier#
 set statusline+=[%t]%* "tail of the filename
@@ -118,6 +130,7 @@ set statusline+=%#error#
 set statusline+=%{StatuslineTabWarning()}%*
 set statusline+=%{StatuslineTrailingSpaceWarning()}
 set statusline+=%#warningmsg#
+
 "display a warning if &paste is set
 set statusline+=%#error#
 set statusline+=%{&paste?'[paste]':''}%*
@@ -146,11 +159,17 @@ let g:ackprg = 'ag --nogroup --column'
 
 ab rpy pry
 ab slef self
+ab lable label
 
 noremap Q q
 noremap q <NOP>
 nmap k gk
 nmap j gj
+nmap <c-j> i<cr><esc>
+
+" nmap K 10gk
+" nmap J 10gj
+
 nmap D "_d
 nmap ,r :Rename <C-R>=expand("%:t")<cr>
 
@@ -175,21 +194,33 @@ nmap <C-d>r <Plug>SetTmuxVars
 nmap <C-c><C-d> vip<C-c><C-d>
 
 nnoremap ,a :call SaveAsync("")<cr>
-nnoremap ,t :call SaveAsync("%")<cr>
+nnoremap ,t :call SaveAsync("file")<cr>
 nnoremap ,s :call SaveAsync("line")<cr>
 nnoremap ,l :call AsyncLastCommand()<cr>
-nnoremap <space>c :botright 30 cw<cr>
+
+" nnoremap <space>c :botright 30 cw<cr>
+nnoremap <space>c :topleft 30 cw<cr>
 
 noremap <space>f :CtrlSF<space>
 noremap <space>F :CtrlSFOpen<cr>
 
-noremap <space>t :tabnew<cr> 
+noremap <space>t :tabnew<cr>
 noremap <space>s :w<cr>
 
 vmap <Enter> <Plug>(EasyAlign)
 
 map <C-l> <Plug>CamelCaseMotion_w
 map <C-h> <Plug>CamelCaseMotion_b
+
+"elixir
+
+nnoremap <space>egm :!mix ecto.gen.migration<space>
+
+nnoremap <C-d><C-d> o@doc """<cr>"""<esc>O
+inoremap <C-d><C-d> <cr>@doc """<cr>"""<esc>O
+
+nmap <C-d><C-e> o<space><space>iex><space>
+imap <C-d><C-e> <cr><space><space>iex><space>
 
 "Fugitive
 nnoremap <space>gs :Gstatus<CR>
@@ -240,10 +271,13 @@ highlight Folded ctermfg=black cterm=bold term=reverse
 function! SaveAsync(test_command)
   if a:test_command == "line"
     let l:test_command = expand("%").":".line(".")
+  elseif a:test_command == "file"
+    let l:test_command = expand("%")
   else
     let l:test_command = a:test_command
   endif
-  let s:last_test_command = "AsyncRun -program=make -post=botright\\ cw " . l:test_command
+  " let s:last_test_command = "AsyncRun -program=make -post=botright\\ cw " . l:test_command
+  let s:last_test_command = "AsyncRun -program=make -post=topleft\\ cw " . l:test_command
   exec s:last_test_command
 endfunction
 
@@ -359,3 +393,5 @@ endif
 if filereadable(glob(".vimrc.local"))
   source .vimrc.local
 endif
+
+command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
