@@ -14,6 +14,7 @@ set vb
 set autoread
 set nowrap
 set list listchars=tab:\ \ ,trail:·
+set exrc
 set wildmenu
 set wildmode=list:longest,full
 set laststatus=2
@@ -34,6 +35,7 @@ set foldmethod=indent
 set foldlevelstart=20
 set mouse=a
 set breakindent
+set macmeta
 set showbreak=\\\\\
 set re=1
 set t_Co=256
@@ -43,6 +45,7 @@ let base16colorspace=256
 set guioptions=
 
 set rtp+=~/.vim/bundle/Vundle.vim
+" set rtp+=/usr/local/opt/fzf
 call vundle#begin()
 
 "Search
@@ -52,7 +55,7 @@ Plugin 'vim-scripts/argtextobj.vim'
 Plugin 'tpope/vim-projectionist'
 Plugin 'tpope/vim-repeat'
 Plugin 'ctrlpvim/ctrlp.vim'
-Plugin 'dyng/ctrlsf.vim'
+" Plugin 'junegunn/fzf.vim'
 Plugin 'eiginn/netrw'
 Plugin 'tpope/vim-vinegar'
 "Edit
@@ -72,24 +75,26 @@ Plugin 'ludovicchabant/vim-gutentags'
 Plugin 'tpope/vim-fugitive'
 Plugin 'idanarye/vim-merginal'
 Plugin 'salomvary/vim-eslint-compiler'
-Plugin 'fabi1cazenave/cua-mode.vim'
+" Plugin 'fabi1cazenave/cua-mode.vim'
 "Languages
 Plugin 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx'] }
 Plugin 'mxw/vim-jsx', { 'for': ['javascript', 'jsx']}
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
-Plugin 'tpope/vim-rails', { 'for': 'ruby' }
-Plugin 'thoughtbot/vim-rspec', { 'for': 'ruby' }
-Plugin 'vim-ruby/vim-ruby', { 'for': 'ruby' }
+" Plugin 'tpope/vim-rails', { 'for': 'ruby' }
+" Plugin 'thoughtbot/vim-rspec', { 'for': 'ruby' }
+" Plugin 'vim-ruby/vim-ruby', { 'for': 'ruby' }
 "Visual
 Plugin 'sickill/vim-monokai'
 Plugin 'powerman/vim-plugin-AnsiEsc'
 Plugin 'skywind3000/asyncrun.vim'
 
-Plugin 'tpope/vim-abolish'
+" Plugin 'tpope/vim-abolish'
 call vundle#end()
 
 colorscheme monokai
 "
+nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
+
 augroup git
   autocmd!
   autocmd FileType git set foldlevel=0
@@ -116,6 +121,8 @@ augroup elixir
   autocmd FileType elixir inoremap <buffer> f> fn() -> end<C-o>b
   autocmd FileType elixir compiler exunit
   autocmd FileType elixir set makeprg=mix\ test\ --color
+
+  autocmd FileType elixir map <silent> <buffer> <space><space> :! mix format %<cr>
 
   autocmd FileType eelixir iab <buffer> << <%
   autocmd FileType eelixir iab <buffer> >> %>
@@ -166,9 +173,12 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 
 let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "priv", "web/static" ]
 
-let g:ctrlp_extensions = ['tag']
+" let g:ctrlp_extensions = ['tag']
 let g:ctrlp_use_caching = 0
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+"test
+"let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
 " let g:ctrlp_custom_ignore = 'node_modules\|bower_components\|DS_Store\|git\|tmp\|bundle\|doc\|deps\|_build'
 
 let mapleader=","
@@ -209,18 +219,27 @@ noremap <C-w>t :tabe %<cr>
 noremap <C-w><C-e> :e!<cr>
 noremap <C-w>e :e!<cr>
 
+noremap <C-w><C-q><C-q> :q!<cr>
+
 nnoremap ,a :call SaveAsync("")<cr>
 nnoremap ,t :call SaveAsync("file")<cr>
 nnoremap ,s :call SaveAsync("line")<cr>
 nnoremap ,l :call AsyncLastCommand()<cr>
 
-nnoremap <space>c :topleft 30 cw<cr>
+nnoremap <space>c :topleft 30 copen<cr>
 
-noremap <space>f :CtrlSF<space>
-noremap <space>F :CtrlSFOpen<cr>
+nnoremap <space>p :tj<space>
+" nnoremap <C-p> :GFiles<cr>
 
-noremap <space>t :tabnew<cr>
-noremap <space>s :w<cr>
+" testing
+nnoremap <space>f :grep<space>
+" nnoremap <space>f :Ag<cr>
+
+" for vim
+" noremap <space>t :tabnew<cr>
+" for mvim
+noremap <space>t :term<cr>
+" noremap <space>s :w<cr>
 
 vmap <Enter> <Plug>(EasyAlign)
 
@@ -229,12 +248,11 @@ map <C-h> <Plug>CamelCaseMotion_b
 
 "elixir
 
-nnoremap <space>egm :!mix ecto.gen.migration<space>
+nnoremap <space>egm :term mix ecto.gen.migration<space>
 nnoremap <space>emm :term mix ecto.migrate<cr>
 nnoremap <space>emr :term mix ecto.rollback<cr>
 
-nnoremap <space>m :term iex -S mix<cr>
-
+nnoremap <space>E :term iex -S mix<cr>
 
 nnoremap <C-d><C-d> o@doc """<cr>"""<esc>O
 inoremap <C-d><C-d> <cr>@doc """<cr>"""<esc>O
@@ -274,7 +292,6 @@ map <space>A :AV<CR>
 
 set wildignore+=*/tmp\//*,*.so,*.swp,*.zip,tags
 
-nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
 
 highlight clear SignColumn
 highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black 
@@ -332,3 +349,8 @@ if filereadable(glob(".vimrc.local"))
 endif
 
 command! -bang -nargs=* -complete=file Make AsyncRun -program=make @ <args>
+
+augroup quickfix
+  autocmd!
+  autocmd  FileType qf silent! call AnsiEscOnFun()
+augroup END
