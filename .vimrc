@@ -35,7 +35,9 @@ set foldmethod=indent
 set foldlevelstart=20
 set mouse=a
 set breakindent
-set macmeta
+if exists('+macmeta')
+  set macmeta
+endif
 set showbreak=\\\\\
 set re=1
 set t_Co=256
@@ -50,12 +52,11 @@ call vundle#begin()
 
 "Search
 Plugin 'VundleVim/Vundle.vim'
-Plugin 'kana/vim-textobj-user'
+" Plugin 'kana/vim-textobj-user'
 Plugin 'vim-scripts/argtextobj.vim'
 Plugin 'tpope/vim-projectionist'
 Plugin 'tpope/vim-repeat'
 Plugin 'ctrlpvim/ctrlp.vim'
-" Plugin 'junegunn/fzf.vim'
 Plugin 'eiginn/netrw'
 Plugin 'tpope/vim-vinegar'
 "Edit
@@ -75,20 +76,16 @@ Plugin 'ludovicchabant/vim-gutentags'
 Plugin 'tpope/vim-fugitive'
 Plugin 'idanarye/vim-merginal'
 Plugin 'salomvary/vim-eslint-compiler'
-" Plugin 'fabi1cazenave/cua-mode.vim'
+Plugin 'milkypostman/vim-togglelist'
 "Languages
 Plugin 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx'] }
 Plugin 'mxw/vim-jsx', { 'for': ['javascript', 'jsx']}
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
-" Plugin 'tpope/vim-rails', { 'for': 'ruby' }
-" Plugin 'thoughtbot/vim-rspec', { 'for': 'ruby' }
-" Plugin 'vim-ruby/vim-ruby', { 'for': 'ruby' }
 "Visual
 Plugin 'sickill/vim-monokai'
 Plugin 'powerman/vim-plugin-AnsiEsc'
 Plugin 'skywind3000/asyncrun.vim'
 
-" Plugin 'tpope/vim-abolish'
 call vundle#end()
 
 colorscheme monokai
@@ -106,7 +103,8 @@ augroup END
 augroup js
   autocmd!
   autocmd BufRead,BufNewFile *.js set filetype=javascript.jsx
-  autocmd FileType javascript compiler eslint
+  autocmd BufRead,BufNewFile *.vue set filetype=vue
+  " autocmd FileType javascript compiler eslint
   autocmd FileType javascript noremap cl :norm Iconsole.log(<esc>A);<esc>
   autocmd FileType javascript inoremap <buffer> >> => {<cr>}<C-o>O
 augroup END
@@ -116,6 +114,7 @@ augroup elixir
   autocmd BufRead,BufNewFile *.exs set filetype=elixir
   autocmd BufRead,BufNewFile *.ex set filetype=elixir
   autocmd BufRead,BufNewFile *.html.eex set filetype=eelixir
+  autocmd BufRead,BufNewFile *.text.eex set filetype=eelixir
 
   autocmd FileType elixir iab <buffer> >> \|>
   autocmd FileType elixir inoremap <buffer> f> fn() -> end<C-o>b
@@ -176,6 +175,8 @@ let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "p
 " let g:ctrlp_extensions = ['tag']
 let g:ctrlp_use_caching = 0
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
+let g:ctrlp_match_current_file = 1
+ 
 "test
 "let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
@@ -184,6 +185,9 @@ let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclu
 let mapleader=","
 let g:ag_prg="ag --column"
 let g:ackprg = 'ag --nogroup --column' 
+
+let g:toggle_list_no_mappings=1
+let g:toggle_list_copen_command="topleft 30 copen"
 
 ab rpy pry
 ab slef self
@@ -226,7 +230,7 @@ nnoremap ,t :call SaveAsync("file")<cr>
 nnoremap ,s :call SaveAsync("line")<cr>
 nnoremap ,l :call AsyncLastCommand()<cr>
 
-nnoremap <space>c :topleft 30 copen<cr>
+nnoremap <space>c :call ToggleQuickfixList()<cr>
 
 nnoremap <space>p :tj<space>
 " nnoremap <C-p> :GFiles<cr>
@@ -275,8 +279,8 @@ xnoremap <space>gl :Glog<CR><CR>zz
 nnoremap <space>glg :Git log --stat --color<CR>
 nnoremap <space>glgg :Git log --graph --color --oneline<CR>
 nnoremap <space>gc :Merginal<cr>
-nnoremap <space>gp :Git add -p<CR>
-nnoremap <space>gP :Gpull<CR>
+nnoremap <space>gP :Git add -p<CR>
+nnoremap <space>gp :Gpull<CR>
 nnoremap <space>gr :Gtabedit HEAD^{}<cr>
 
 nnoremap <silent> <expr> <space>d ":\<C-u>".(&diff?"diffoff":"diffthis")."\<CR>"
