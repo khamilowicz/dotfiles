@@ -60,6 +60,8 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'eiginn/netrw'
 Plugin 'tpope/vim-vinegar'
 "Edit
+" Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" Plugin 'junegunn/fzf.vim'
 Plugin 'vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'tpope/vim-surround'
@@ -170,12 +172,18 @@ au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g
 " let g:ruby_indent_access_modifier_style = 'normal'
 " let g:rubycomplete_load_gemfile = 1
 
-let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "priv", "web/static" ]
+let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "priv", "web/static", "ios" ]
 
 " let g:ctrlp_extensions = ['tag']
 let g:ctrlp_use_caching = 0
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_match_current_file = 1
+
+" let g:fzf_buffers_jump = 1
+" let g:fzf_tags_command = 'ctags -R'
+
+
+" nmap <C-p> :GFiles<cr>
  
 "test
 "let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
@@ -236,7 +244,7 @@ nnoremap <space>p :tj<space>
 " nnoremap <C-p> :GFiles<cr>
 
 " testing
-nnoremap <space>f :grep<space>
+nnoremap <space>f :Ggrep<space>
 " nnoremap <space>f :Ag<cr>
 
 " for vim
