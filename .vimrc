@@ -44,15 +44,16 @@ set t_Co=256
 set background=dark
 let base16colorspace=256
 
-set guioptions=
+set guioptions=A
 
 set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=/usr/local/opt/fzf
 call vundle#begin()
 
+let g:netrw_fastbrowse=0
+
 "Search
 Plugin 'VundleVim/Vundle.vim'
-" Plugin 'kana/vim-textobj-user'
 Plugin 'vim-scripts/argtextobj.vim'
 Plugin 'tpope/vim-projectionist'
 Plugin 'tpope/vim-repeat'
@@ -60,8 +61,6 @@ Plugin 'ctrlpvim/ctrlp.vim'
 Plugin 'eiginn/netrw'
 Plugin 'tpope/vim-vinegar'
 "Edit
-" Plugin 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-" Plugin 'junegunn/fzf.vim'
 Plugin 'vim-addon-mw-utils'
 Plugin 'tomtom/tlib_vim'
 Plugin 'tpope/vim-surround'
@@ -79,12 +78,18 @@ Plugin 'tpope/vim-fugitive'
 Plugin 'idanarye/vim-merginal'
 Plugin 'salomvary/vim-eslint-compiler'
 Plugin 'milkypostman/vim-togglelist'
+Plugin 'tpope/vim-rsi'
+Plugin 'chrisbra/csv.vim'
 "Languages
 Plugin 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx'] }
 Plugin 'mxw/vim-jsx', { 'for': ['javascript', 'jsx']}
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
+Plugin 'tpope/vim-rails', { 'for': ['ruby'] }
+Plugin 'vim-ruby/vim-ruby', { 'for': ['ruby'] }
+Plugin 'janko-m/vim-test'
 "Visual
 Plugin 'sickill/vim-monokai'
+Plugin 'summerfruit256.vim'
 Plugin 'powerman/vim-plugin-AnsiEsc'
 Plugin 'skywind3000/asyncrun.vim'
 
@@ -128,7 +133,6 @@ augroup elixir
   autocmd FileType eelixir iab <buffer> << <%
   autocmd FileType eelixir iab <buffer> >> %>
 augroup END
-
 
 autocmd bufwritepost * unlet! b:statusline_trailing_space_warning
 autocmd bufwritepost * unlet! b:statusline_tab_warning
@@ -195,12 +199,13 @@ let g:ag_prg="ag --column"
 let g:ackprg = 'ag --nogroup --column' 
 
 let g:toggle_list_no_mappings=1
-let g:toggle_list_copen_command="topleft 30 copen"
+let g:toggle_list_copen_command="topleft 20 copen"
 
 ab rpy pry
 ab slef self
 ab lable label
 ab insepct inspect
+ab inpsect inspect
 ab Chagneset Changeset
 ab getext gettext
 
@@ -214,6 +219,9 @@ nmap D "_d
 nmap ,r :Rename <C-R>=expand("%:t")<cr>
 
 vnoremap . :norm.<CR>
+
+noremap <D-]> :bnext<cr>
+noremap <D-[> :bprevious<cr>
 
 noremap ]q :cnext<cr>zz
 noremap [q :cprevious<cr>zz
@@ -243,14 +251,14 @@ nnoremap <space>c :call ToggleQuickfixList()<cr>
 nnoremap <space>p :tj<space>
 " nnoremap <C-p> :GFiles<cr>
 
-" testing
-nnoremap <space>f :Ggrep<space>
+nnoremap <space>f :silent Ggrep<space>
 " nnoremap <space>f :Ag<cr>
 
 " for vim
 " noremap <space>t :tabnew<cr>
 " for mvim
 noremap <space>t :term<cr>
+noremap <space>T :term<cr>
 " noremap <space>s :w<cr>
 
 vmap <Enter> <Plug>(EasyAlign)
@@ -281,11 +289,11 @@ nnoremap <space>gD :Git diff --cached<CR>
 nnoremap <space>gDD :Git diff<CR>
 nnoremap <space>gw :Gwrite<CR>
 nnoremap <space>ge :Gedit<CR>
-nnoremap <space>gL :Glog<CR>
-nnoremap <space>gh :Glog --<CR>
-xnoremap <space>gl :Glog<CR><CR>zz
-nnoremap <space>glg :Git log --stat --color<CR>
-nnoremap <space>glgg :Git log --graph --color --oneline<CR>
+nnoremap <space>gl :silent Glog<CR>
+xnoremap <space>gl :Glog <Home>silent <End><CR>
+nnoremap <space>gh :silent Glog --<CR>
+nnoremap <space>glg :silent Git log --stat --color<CR>
+nnoremap <space>glgg :silent Git log --graph --color --oneline<CR>
 nnoremap <space>gc :Merginal<cr>
 nnoremap <space>gP :Git add -p<CR>
 nnoremap <space>gp :Gpull<CR>
