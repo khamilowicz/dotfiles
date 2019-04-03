@@ -12,6 +12,7 @@ set lazyredraw
 set et
 set vb
 set autoread
+set hidden
 set nowrap
 set list listchars=tab:\ \ ,trail:·
 set exrc
@@ -29,7 +30,7 @@ set undodir=~/.vim/undo
 set virtualedit=block
 set diffopt+=iwhite,vertical
 set formatoptions+=n
-set formatoptions+=t 
+set formatoptions+=t
 set incsearch
 set foldmethod=indent
 set foldlevelstart=20
@@ -48,9 +49,9 @@ set guioptions=A
 
 set rtp+=~/.vim/bundle/Vundle.vim
 " set rtp+=/usr/local/opt/fzf
-call vundle#begin()
-
 let g:netrw_fastbrowse=0
+
+call vundle#begin()
 
 "Search
 Plugin 'VundleVim/Vundle.vim'
@@ -75,29 +76,34 @@ Plugin 'vim-scripts/camelcasemotion'
 Plugin 'ludovicchabant/vim-gutentags'
 "Utilities
 Plugin 'tpope/vim-fugitive'
+Plugin 'tpope/vim-git'
+" Plugin 'w0rp/ale'
 Plugin 'idanarye/vim-merginal'
-Plugin 'salomvary/vim-eslint-compiler'
 Plugin 'milkypostman/vim-togglelist'
 Plugin 'tpope/vim-rsi'
 Plugin 'chrisbra/csv.vim'
 "Languages
+" Plugin 'slashmili/alchemist.vim'
 Plugin 'pangloss/vim-javascript', { 'for': ['javascript', 'jsx'] }
 Plugin 'mxw/vim-jsx', { 'for': ['javascript', 'jsx']}
 Plugin 'elixir-lang/vim-elixir', { 'for': ['elixir', 'eelixir'] }
+Plugin 'tmcw/vim-eslint-compiler', { 'for': ['javascript', 'jsx']}
 Plugin 'tpope/vim-rails', { 'for': ['ruby'] }
 Plugin 'vim-ruby/vim-ruby', { 'for': ['ruby'] }
-Plugin 'janko-m/vim-test'
+" Plugin 'janko-m/vim-test'
 "Visual
 Plugin 'sickill/vim-monokai'
 Plugin 'summerfruit256.vim'
 Plugin 'powerman/vim-plugin-AnsiEsc'
 Plugin 'skywind3000/asyncrun.vim'
+Plugin 'rizzatti/dash.vim'
 
 call vundle#end()
+" let g:ale_completion_enabled = 1
 
 colorscheme monokai
 "
-nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr> 
+nnoremap <space><space> :noh<cr>:%s/\s\+$//e<cr>mxgg=G`x:RemoveFancyCharacters<cr>
 
 augroup git
   autocmd!
@@ -111,9 +117,11 @@ augroup js
   autocmd!
   autocmd BufRead,BufNewFile *.js set filetype=javascript.jsx
   autocmd BufRead,BufNewFile *.vue set filetype=vue
-  " autocmd FileType javascript compiler eslint
+  autocmd FileType javascript compiler eslint
   autocmd FileType javascript noremap cl :norm Iconsole.log(<esc>A);<esc>
   autocmd FileType javascript inoremap <buffer> >> => {<cr>}<C-o>O
+  autocmd FileType javascript map <silent> <buffer> <space><space> :make %<cr>
+  autocmd FileType javascript.jsx map <silent> <buffer> <space><space> :make %<cr>
 augroup END
 
 augroup elixir
@@ -128,7 +136,8 @@ augroup elixir
   autocmd FileType elixir compiler exunit
   autocmd FileType elixir set makeprg=mix\ test\ --color
 
-  autocmd FileType elixir map <silent> <buffer> <space><space> :! mix format %<cr>
+  autocmd FileType elixir map <silent> <buffer> <space><space> :! mix format <cr>
+  set formatprg=mix\ format\ -
 
   autocmd FileType eelixir iab <buffer> << <%
   autocmd FileType eelixir iab <buffer> >> %>
@@ -146,14 +155,14 @@ set statusline+=%#warningmsg#
 set statusline+=%{&ff!='unix'?'['.&ff.']':''}%*
 "display a warning if file encoding isnt utf-8
 set statusline+=%#warningmsg#
-set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}%* 
+set statusline+=%{(&fenc!='utf-8'&&&fenc!='')?'['.&fenc.']':''}%*
 set statusline+=%h%y      "filetype help file flag
 "read only flag
 set statusline+=%#identifier#
-set statusline+=%r%* 
+set statusline+=%r%*
 "modified flag
 set statusline+=%#identifier#
-set statusline+=%m%* 
+set statusline+=%m%*
 "display a warning if &et is wrong, or we have mixed-indenting
 set statusline+=%#error#
 " set statusline+=%{StatuslineTabWarning()}%*
@@ -166,8 +175,8 @@ set statusline+=%{&paste?'[paste]':''}%*
 set statusline+=%{fugitive#statusline()}
 set statusline+=%=      "left/right separator
 set statusline+=\ %P\     "percent through file
-set statusline+=%c,     "cursor column
-set statusline+=%l/%L   "cursor line/total lines
+set statusline+=%l\|     "cursor column
+set statusline+=%c\|%L   "cursor line/total lines
 set statusline+=%#warningmsg#
 
 au BufReadPost * if line("'\"") > 1 && line("'\"") <= line("$") | exe "normal! g`\"" | endif
@@ -182,13 +191,17 @@ let g:gutentags_ctags_exclude = ['bundle/', 'deps', 'node_modules', "_build", "p
 let g:ctrlp_use_caching = 0
 let g:ctrlp_user_command = ['.git/', 'git --git-dir=%s/.git ls-files -oc --exclude-standard']
 let g:ctrlp_match_current_file = 1
+let g:ctrlp_match_window = 'top,order:btt,min:1,max:10'
+let g:netrw_fastbrowse = 2
+
+" let g:alchemist_tag_disable = 1
 
 " let g:fzf_buffers_jump = 1
 " let g:fzf_tags_command = 'ctags -R'
 
 
 " nmap <C-p> :GFiles<cr>
- 
+
 "test
 "let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
 
@@ -196,10 +209,19 @@ let g:ctrlp_match_current_file = 1
 
 let mapleader=","
 let g:ag_prg="ag --column"
-let g:ackprg = 'ag --nogroup --column' 
+let g:ackprg = 'ag --nogroup --column'
+
+" let g:ale_fix_on_save = 1
+" let g:ale_elixir_elixir_ls_release = '/Users/piotrszeremeta/Projects/elixir-ls/rel/'
+" let g:ale_linters = {}
+" let g:ale_linters.elixir = ['elixir-ls', 'credo']
+" let g:ale_fixers = {'*': ['remove_trailing_lines', 'trim_whitespace']}
+" let g:ale_fixers.elixir = ['mix_format']
 
 let g:toggle_list_no_mappings=1
-let g:toggle_list_copen_command="topleft 20 copen"
+let g:toggle_list_copen_command="topleft 30 copen"
+
+let g:slime_target = "vimterminal"
 
 ab rpy pry
 ab slef self
@@ -209,6 +231,7 @@ ab inpsect inspect
 ab Chagneset Changeset
 ab getext gettext
 
+nmap <C-w><C-q> :bp <BAR> bd #<CR>
 noremap Q q
 noremap q <NOP>
 nmap k gk
@@ -245,6 +268,7 @@ nnoremap ,a :call SaveAsync("")<cr>
 nnoremap ,t :call SaveAsync("file")<cr>
 nnoremap ,s :call SaveAsync("line")<cr>
 nnoremap ,l :call AsyncLastCommand()<cr>
+nnoremap ,T :AsyncStop<cr>
 
 nnoremap <space>c :call ToggleQuickfixList()<cr>
 
@@ -252,6 +276,8 @@ nnoremap <space>p :tj<space>
 " nnoremap <C-p> :GFiles<cr>
 
 nnoremap <space>f :silent Ggrep<space>
+" nnoremap <space>f :silent Ggrep<space>
+
 " nnoremap <space>f :Ag<cr>
 
 " for vim
@@ -290,13 +316,17 @@ nnoremap <space>gDD :Git diff<CR>
 nnoremap <space>gw :Gwrite<CR>
 nnoremap <space>ge :Gedit<CR>
 nnoremap <space>gl :silent Glog<CR>
+nnoremap <space>F :silent Glog -S
 xnoremap <space>gl :Glog <Home>silent <End><CR>
-nnoremap <space>gh :silent Glog --<CR>
+nnoremap <space>gh :silent Glog -- %<CR>
+nnoremap <space>gH :silent Glog HEAD~10.. --<CR>
+nnoremap <space>gHH :silent Glog --<CR>
 nnoremap <space>glg :silent Git log --stat --color<CR>
 nnoremap <space>glgg :silent Git log --graph --color --oneline<CR>
 nnoremap <space>gc :Merginal<cr>
 nnoremap <space>gP :Git add -p<CR>
-nnoremap <space>gp :Gpull<CR>
+nnoremap <space>gp :silent Gpull<CR>
+nnoremap <space>gpu :Gpush<CR>
 nnoremap <space>gr :Gtabedit HEAD^{}<cr>
 
 nnoremap <silent> <expr> <space>d ":\<C-u>".(&diff?"diffoff":"diffthis")."\<CR>"
@@ -312,9 +342,10 @@ map <space>A :AV<CR>
 
 set wildignore+=*/tmp\//*,*.so,*.swp,*.zip,tags
 
+menu MacVim.Update\ Plugins :PluginUpdate<cr>
 
 highlight clear SignColumn
-highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black 
+highlight Folded term=reverse cterm=bold ctermbg=gray ctermfg=black
 highlight Folded ctermfg=black cterm=bold term=reverse
 
 function! SaveAsync(test_command)
@@ -358,6 +389,37 @@ function! g:AnsiEscOnFun()
   else
     AnsiEsc!
   endif
+endfunction
+
+function! g:ElixirBreak(server)
+  let mfa = ExtractMFA()
+  execute "term iex --sname debug --remsh " . a:server
+  call term_sendkeys(bufnr("%"), "break! " . l:mfa)
+endfunction
+
+function! g:ElixirCallers()
+  let mfa = ExtractMFA()
+  let mfa = substitute(l:mfa, "\(\.\\+", "", "")
+  set errorformat+=%f:%l:\ %m
+  execute "AsyncRun! mix xref callers " . l:mfa
+  copen
+endfunction
+
+function! g:ExtractMFA()
+  let @m = ""
+  let @f = ""
+  execute "normal! ml"
+  execute "normal! $?def\<cr>"
+  execute "normal! w\"fy/,\\? do:\\?\<cr>"
+  execute "normal! [z"
+  execute "normal! [["
+  execute "normal! w\"myaW"
+  execute "normal! 'l"
+  let @m = trim(@m, " ")
+  let @f = substitute(@f, "\n", " ", "g")
+  let @f = substitute(@f, "  ", "", "g")
+  let @f = substitute(@f, "\\\\.\\{-}\\ze,", "", "g")
+  return @m . "." . @f
 endfunction
 
 if &diff
